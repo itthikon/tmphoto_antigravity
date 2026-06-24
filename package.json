@@ -1,0 +1,27 @@
+{
+  "name": "photo-studio-line-liff",
+  "version": "1.0.0",
+  "description": "Photo Studio LINE Official Account & LIFF application",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:init": "node src/db/init.js"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "^7.5.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "@aws-sdk/client-s3": "^3.562.0",
+    "express": "^4.19.2",
+    "jimp": "^0.22.12",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

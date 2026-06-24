@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TmStudio LIFF App</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid var(--panel-border);">
+      <div>
+        <h1 class="studio-title" style="font-size: 22px; font-weight: 700;">TmStudio</h1>
+        <p style="font-size: 11px; color: var(--text-muted);">ร้านถ่ายภาพ & จองคิวออนไลน์</p>
+      </div>
+      
+      <!-- Cart Indicator (hidden for flat rate, shown for per_photo) -->
+      <div id="cart-indicator-wrapper" style="display: none;">
+        <div class="cart-header-icon" id="btn-open-cart">
+          <i class="fa-solid fa-cart-shopping" style="color: var(--primary);"></i>
+          <span class="cart-count" id="cart-badge-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Developer Mock Login Box (Only shown if NOT in LIFF) -->
+    <div id="dev-login-panel" class="glass-panel" style="padding: 15px; margin-bottom: 20px; border-color: var(--accent); display: none;">
+      <h3 style="color: var(--accent); font-size: 14px; margin-bottom: 8px;"><i class="fa-solid fa-code"></i> Developer Bypass Controls</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">คุณเปิดในบราวเซอร์ภายนอก ใช้ปุ่มนี้จำลองผู้ใช้งาน LINE ได้เลยครับ</p>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="dev-user-id" class="form-control" placeholder="ใส่ LINE User ID สมมุติ" value="mock_user_liff_1" style="height:38px; font-size:12px; padding:8px;">
+        <button id="btn-dev-login" class="btn btn-primary" style="height:38px; padding:0 15px; font-size:12px;">จำลอง Login</button>
+      </div>
+    </div>
+
+    <!-- Active View Area -->
+    <main id="app-view-content" style="flex-grow: 1; display: flex; flex-direction: column;">
+      
+      <!-- LOADING SCREEN -->
+      <div id="screen-loading" class="view-screen active" style="align-items:center; justify-content:center; flex-grow:1;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+        <p style="color: var(--text-muted);">กำลังโหลดข้อมูลจาก LINE LIFF...</p>
+      </div>
+
+      <!-- REGISTRATION SCREEN -->
+      <div id="screen-register" class="view-screen">
+        <div class="glass-panel" style="padding: 24px; display:flex; flex-direction:column; gap:16px;">
+          <h2 style="font-size: 20px;"><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> ลงทะเบียนสมาชิก</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">กรอกข้อมูลของท่านเพื่อจองคิวถ่ายภาพและดูรูปถ่ายได้ทันที</p>
+          
+          <form id="form-register">
+            <div class="form-group">
+              <label for="reg-name">ชื่อ-นามสกุล (สำหรับออกใบเสร็จ)</label>
+              <input type="text" id="reg-name" class="form-control" required placeholder="เช่น นายประหยัด รักดี">
+            </div>
+            <div class="form-group">
+              <label for="reg-phone">เบอร์โทรศัพท์</label>
+              <input type="tel" id="reg-phone" class="form-control" required placeholder="เช่น 0891234567">
+            </div>
+            <div class="form-group">
+              <label for="reg-email">อีเมล</label>
+              <input type="email" id="reg-email" class="form-control" required placeholder="เช่น example@domain.com">
+            </div>
+            <div class="form-group">
+              <label for="reg-package">เลือกแพ็คเกจเริ่มต้น</label>
+              <select id="reg-package" class="form-control" required></select>
+            </div>
+            
+            <div id="register-package-description" style="font-size:12px; color: var(--primary); background: var(--primary-glow); padding:10px; border-radius: var(--radius-sm); margin-bottom:15px; border-left: 3px solid var(--primary); display:none;"></div>
+
+            <button type="submit" class="btn btn-primary btn-block">ยืนยันลงทะเบียน</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- PORTFOLIO / POSES SCREEN (Home) -->
+      <div id="screen-portfolio" class="view-screen">
+        <!-- Showcase Slide -->
+        <div class="glass-panel" style="padding: 20px; display:flex; flex-direction:column; gap:8px;">
+          <h2 style="font-size: 18px; color: var(--primary);"><i class="fa-solid fa-images"></i> ตัวอย่างผลงานเด่น</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">ผลงานถ่ายพอร์ตเทรตและโฆษณาโดยสตูดิโอของเรา</p>
+          
+          <div class="gallery-grid" id="portfolio-container">
+            <!-- Dynamic elements will be inserted here -->
+          </div>
+        </div>
+
+        <!-- Pose Guide Section -->
+        <div class="glass-panel" style="padding: 20px; display:flex; flex-direction:column; gap:8px; margin-top: 15px;">
+          <h2 style="font-size: 18px; color: var(--secondary);"><i class="fa-solid fa-wand-magic-sparkles"></i> ไอเดียท่าโพสต์สุดชิค</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">เลือกดูเป็นไอเดียก่อนเริ่มถ่ายภาพกับตากล้อง</p>
+          
+          <div class="gallery-grid" id="poses-container">
+            <!-- Dynamic elements -->
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKING SCREEN -->
+      <div id="screen-booking" class="view-screen">
+        <div class="glass-panel" style="padding: 20px;">
+          <h2 style="font-size: 18px; margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
+            <i class="fa-regular fa-calendar-days" style="color: var(--primary);"></i> จองคิวถ่ายภาพ
+          </h2>
+          
+          <!-- Month Selector -->
+          <div class="calendar-wrapper glass-panel" style="margin-bottom:15px; background: rgba(0,0,0,0.2);">
+            <div class="calendar-header">
+              <button class="btn-icon-only" id="calendar-prev-month"><i class="fa-solid fa-chevron-left"></i></button>
+              <h3 id="calendar-month-year" style="font-size: 15px;">มิถุนายน 2026</h3>
+              <button class="btn-icon-only" id="calendar-next-month"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="calendar-grid" id="calendar-grid-days">
+              <!-- Grid Header -->
+              <div class="calendar-day-name">อา</div>
+              <div class="calendar-day-name">จ</div>
+              <div class="calendar-day-name">อ</div>
+              <div class="calendar-day-name">พ</div>
+              <div class="calendar-day-name">พฤ</div>
+              <div class="calendar-day-name">ศ</div>
+              <div class="calendar-day-name">ส</div>
+              <!-- Grid Days inserted by JS -->
+            </div>
+          </div>
+
+          <!-- Time slot Selection -->
+          <div id="time-slots-section" style="display:none; margin-bottom: 15px;">
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">เลือกรอบช่วงเวลาที่ว่าง:</p>
+            <div class="time-slots-container" id="time-slots-list">
+              <!-- Slots insert by JS -->
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group" style="margin-top: 15px;">
+            <label for="booking-notes">หมายเหตุเพิ่มเติม (เช่น โทนสีเสื้อผ้า หรือประเภทฉาก)</label>
+            <textarea id="booking-notes" class="form-control" rows="2" placeholder="ระบุความต้องการเพิ่มเติมของท่าน..."></textarea>
+          </div>
+
+          <button id="btn-submit-booking" class="btn btn-primary btn-block" style="margin-top:10px;" disabled>ยืนยันส่งคำขอจองคิว</button>
+        </div>
+
+        <!-- User's Existing Bookings -->
+        <div class="glass-panel" style="padding: 20px; margin-top: 15px;">
+          <h3 style="font-size: 16px; margin-bottom: 12px;"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการจองคิวของคุณ</h3>
+          <div id="my-bookings-list" style="display:flex; flex-direction:column; gap:10px;">
+            <p style="font-size: 13px; color: var(--text-muted); text-align:center;">ไม่มีข้อมูลคิวจองในขณะนี้</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY PHOTOS / PHOTO SHOP SCREEN -->
+      <div id="screen-photos" class="view-screen">
+        <div class="glass-panel" style="padding: 20px; display:flex; flex-direction:column; gap:8px;">
+          <h2 style="font-size: 18px; color: var(--primary);"><i class="fa-solid fa-photo-film"></i> คลังรูปถ่ายของคุณ</h2>
+          <p style="font-size: 12px; color: var(--text-muted);" id="photos-package-intro">แพ็คเกจของคุณสามารถเลือกดาวน์โหลดได้ฟรีทั้งหมด หรือเลือกซื้อแยกภาพ</p>
+          
+          <div class="photo-shop-grid" id="photos-grid-container" style="margin-top: 15px;">
+            <!-- Photos dynamically loaded -->
+          </div>
+        </div>
+      </div>
+
+      <!-- PACKAGE MANAGER SCREEN -->
+      <div id="screen-packages" class="view-screen">
+        <!-- Active Package Detail -->
+        <div class="glass-panel" style="padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--primary);">
+          <h2 style="font-size: 15px; color: var(--text-muted); margin-bottom: 5px;">แพ็คเกจที่ใช้งานปัจจุบัน</h2>
+          <h3 id="current-pack-name" style="font-size: 20px; color: white;">...</h3>
+          <div id="current-pack-price" class="package-price" style="margin: 10px 0 5px 0;">0 <span>บาท</span></div>
+          <p id="current-pack-desc" style="font-size:13px; color: var(--text-muted);"></p>
+          <div id="current-pack-status-badge" style="margin-top:10px; display:inline-block;"></div>
+        </div>
+
+        <!-- Upgrade/Downgrade Section -->
+        <div class="glass-panel" style="padding: 20px;">
+          <h2 style="font-size: 18px; margin-bottom: 15px;"><i class="fa-solid fa-arrows-up-down" style="color: var(--secondary);"></i> เปลี่ยน / อัพเกรดแพ็คเกจ</h2>
+          <div id="packages-list-container">
+            <!-- Dynamic package pricing list -->
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="tab-bar" id="navigation-tab-bar" style="display:none;">
+      <button class="tab-item active" data-screen="screen-portfolio">
+        <i class="fa-solid fa-images"></i>
+        <span>ผลงาน</span>
+      </button>
+      <button class="tab-item" data-screen="screen-booking">
+        <i class="fa-regular fa-calendar-check"></i>
+        <span>จองคิว</span>
+      </button>
+      <button class="tab-item" data-screen="screen-photos">
+        <i class="fa-solid fa-camera-retro"></i>
+        <span>รูปภาพ</span>
+      </button>
+      <button class="tab-item" data-screen="screen-packages">
+        <i class="fa-solid fa-box-open"></i>
+        <span>แพ็คเกจ</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- PAYMENT UPLOAD MODAL -->
+  <div class="modal-overlay" id="modal-payment">
+    <div class="modal-content glass-panel" style="background-color: var(--bg-secondary);">
+      <div class="modal-header">
+        <h3 id="modal-payment-title" style="font-size: 16px;"><i class="fa-solid fa-wallet" style="color: var(--primary);"></i> ชำระเงิน & อัพโหลดหลักฐาน</h3>
+        <button class="close-btn" id="btn-close-payment-modal">&times;</button>
+      </div>
+      
+      <div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;" id="modal-payment-desc">กรุณาโอนเงินตามข้อมูลด้านล่างเพื่อเสร็จสิ้นกระบวนการ</p>
+        
+        <!-- Transfer Account details -->
+        <div style="background-color:rgba(0,0,0,0.3); padding:15px; border-radius: var(--radius-sm); border:1px solid var(--panel-border); margin-bottom: 15px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span style="color:var(--text-muted)">ธนาคาร:</span><span style="font-weight:600;">กสิกรไทย (K-Bank)</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span style="color:var(--text-muted)">เลขบัญชี:</span><span style="font-weight:600; color:var(--primary);">123-4-56789-0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span style="color:var(--text-muted)">ชื่อบัญชี:</span><span style="font-weight:600;">บจก. โฟโต้ สตูดิโอ</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; border-top:1px solid var(--panel-border); padding-top:8px; font-size:15px; font-weight:600;">
+            <span>ยอดชำระ:</span><span style="color:var(--primary);" id="modal-payment-amount">0 บาท</span>
+          </div>
+        </div>
+
+        <form id="form-upload-slip">
+          <input type="hidden" id="modal-payment-id">
+          
+          <div class="form-group">
+            <label for="slip-file-input">อัพโหลดไฟล์สลิปโอนเงิน (JPG, PNG)</label>
+            <input type="file" id="slip-file-input" class="form-control" accept="image/*" required style="padding: 8px;">
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block" id="btn-submit-slip">ส่งสลิปโอนเงิน</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOPPING CART MODAL -->
+  <div class="modal-overlay" id="modal-cart">
+    <div class="modal-content glass-panel" style="background-color: var(--bg-secondary);">
+      <div class="modal-header">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-cart-shopping" style="color: var(--primary);"></i> ตะกร้าเลือกรูปภาพ</h3>
+        <button class="close-btn" id="btn-close-cart-modal">&times;</button>
+      </div>
+      
+      <div style="display:flex; flex-direction:column; gap:15px;">
+        <div id="cart-items-container" style="max-height: 250px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+          <!-- Cart items load here -->
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:600; border-top: 1px solid var(--panel-border); padding-top:10px;">
+          <span>ยอดรวมชำระ:</span>
+          <span style="color:var(--primary);" id="cart-total-price">0 บาท</span>
+        </div>
+
+        <button id="btn-cart-checkout" class="btn btn-primary btn-block">ดำเนินการชำระเงิน</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO LIGHTBOX MODAL -->
+  <div class="modal-overlay" id="modal-lightbox">
+    <div class="modal-content glass-panel" style="max-width: 450px; background-color: rgba(11,15,25,0.95); padding: 15px;">
+      <div class="modal-header" style="margin-bottom:10px;">
+        <h3 style="font-size: 14px;" id="lightbox-title">ภาพตัวอย่างลายน้ำ</h3>
+        <button class="close-btn" id="btn-close-lightbox-modal">&times;</button>
+      </div>
+      <div style="aspect-ratio:3/4; overflow:hidden; border-radius: var(--radius-sm); border:1px solid var(--panel-border); background-color:black; position:relative;">
+        <img id="lightbox-img" src="" alt="Lightbox image" style="width:100%; height:100%; object-fit:contain;">
+      </div>
+      <div id="lightbox-actions" style="margin-top:15px; display:flex; gap:10px;">
+        <!-- Buttons injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Import LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <!-- API Helper Class -->
+  <script src="/js/api.js"></script>
+  <!-- Main App Script -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
