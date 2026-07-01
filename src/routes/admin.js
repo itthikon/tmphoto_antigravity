@@ -99,7 +99,7 @@ router.get('/bookings', authenticateAdmin, async (req, res) => {
     return res.status(200).json(formatted);
   } catch (error) {
     console.error('Error fetching admin bookings:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
 
@@ -154,7 +154,7 @@ router.get('/payments', authenticateAdmin, async (req, res) => {
     return res.status(200).json(payments);
   } catch (error) {
     console.error('Error fetching admin payments:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
 
@@ -385,7 +385,7 @@ router.get('/users', authenticateAdmin, async (req, res) => {
     return res.status(200).json(users);
   } catch (error) {
     console.error('Error fetching admin users:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
 
