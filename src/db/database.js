@@ -7,10 +7,13 @@ const dbType = process.env.DB_TYPE || 'sqlite';
 let config;
 if (dbType === 'sqlite') {
   const dbPath = process.env.DB_FILENAME || './src/db/database.sqlite';
+  const resolvedDbPath = path.isAbsolute(dbPath)
+    ? dbPath
+    : path.resolve(__dirname, '../../', dbPath);
   config = {
     client: 'sqlite3',
     connection: {
-      filename: path.resolve(process.cwd(), dbPath)
+      filename: resolvedDbPath
     },
     useNullAsDefault: true
   };
