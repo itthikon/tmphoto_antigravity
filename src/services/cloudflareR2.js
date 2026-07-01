@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 const accessKeyId = process.env.CLOUDFLARE_ACCESS_KEY_ID;

@@ -1,6 +1,7 @@
 const db = require('../db/database');
 const lineService = require('./line');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 /**
  * Checks for confirmed bookings happening tomorrow and sends notifications.
