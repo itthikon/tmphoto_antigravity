@@ -93,9 +93,7 @@ function setupEventListeners() {
   // Admin logout button
   document.getElementById('btn-admin-logout').addEventListener('click', () => {
     localStorage.removeItem('adminToken');
-    API.setAdminToken(null);
-    showToast('ออกจากระบบเรียบร้อยแล้วค่ะ', 'info');
-    checkAdminAuth();
+    location.reload();
   });
 
   // Slip preview modal close
