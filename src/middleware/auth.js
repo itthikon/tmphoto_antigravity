@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const db = require('../db/database');
 const lineService = require('../services/line');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'photostudio_admin_secret_key_123!';
 
