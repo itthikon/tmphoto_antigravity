@@ -123,7 +123,26 @@ async function checkAuthMe() {
       
       // Setup main visual states
       document.getElementById('navigation-tab-bar').style.display = 'flex';
-      switchScreen('screen-portfolio');
+      
+      // Determine initial tab from URL parameter (e.g. ?tab=booking)
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      let initialScreen = 'screen-portfolio';
+      
+      if (tabParam === 'booking') {
+        initialScreen = 'screen-booking';
+      } else if (tabParam === 'photos') {
+        initialScreen = 'screen-photos';
+      } else if (tabParam === 'packages') {
+        initialScreen = 'screen-packages';
+      } else {
+        const hash = window.location.hash;
+        if (hash === '#booking') initialScreen = 'screen-booking';
+        else if (hash === '#photos') initialScreen = 'screen-photos';
+        else if (hash === '#packages') initialScreen = 'screen-packages';
+      }
+      
+      switchScreen(initialScreen);
       
       // Update UI displays
       updatePhotosIntroText();
